@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-const uitls  = require('./utils/content');
-const _ = require('lodash');
+const utils = require("./utils/content");
+const _ = require("lodash");
 
 /**
  * ContentExportImport.js service
@@ -13,25 +13,29 @@ module.exports = {
   importData: async (ctx) => {
     const { targetModel, source, kind } = ctx.request.body;
     try {
-      if (kind === 'collectionType' && Array.isArray(source)) {
-        for (let i = 0; i < source.length; i++) {
-          await uitls.importItemByContentType(targetModel, source[i])
-        }
+      if (kind === "collectionType" && Array.isArray(source)) {
+        return Promise.all(
+          source.map((row) => {
+            utils.importItemByContentType(targetModel, row);
+          })
+        );
       } else {
-        await uitls.importSingleType(targetModel, source);
+        await utils.importSingleType(targetModel, source);
+        // await utils.importSingleType(targetModel, source);
       }
     } catch (e) {
+      console.log(e);
       ctx.throw(409, e.message);
     }
   },
   deleteAllData: async (targetModelUid, ctx) => {
     try {
-      const all = await uitls.findAll(targetModelUid);
+      const all = await utils.findAll(targetModelUid);
       const ids = _.map(all, (item) => item.id);
-      await uitls.deleteByIds(targetModelUid, ids);
+      await utils.deleteByIds(targetModelUid, ids);
       return all.length;
     } catch (e) {
       ctx.throw(409, e.message);
     }
-  }
+  },
 };
