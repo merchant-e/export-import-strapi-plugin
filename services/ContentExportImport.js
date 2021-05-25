@@ -21,7 +21,6 @@ module.exports = {
         );
       } else {
         await utils.importSingleType(targetModel, source);
-        // await utils.importSingleType(targetModel, source);
       }
     } catch (e) {
       console.log(e);
